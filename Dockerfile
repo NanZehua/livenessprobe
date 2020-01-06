@@ -12,9 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM gcr.io/distroless/static:latest
-LABEL maintainers="Kubernetes Authors"
-LABEL description="CSI Driver liveness probe"
+FROM golang:1.12.4 as builder
 
-COPY ./bin/livenessprobe /livenessprobe
-ENTRYPOINT ["/livenessprobe"]
+ARG DIR=$GOPATH/src/github.com/kubernetes-csi/livenessprobe
+
+WORKDIR $DIR
+
+COPY / $DIR
+
+ENV GO111MODULE=on
+
+ENV GOPROXY=https://goproxy.io
+
+# multi-stage build cache, if go.mod go.sum change build again
+RUN go mod download
+
+RUN CGO_ENABLED=0 go build -o csi-livenessprobe -ldflags '-s -w' -v $DIR/cmd/livenessprobe
+
+FROM alpine:3.9
+
+# RUN apk add --no-cache bash
+
+WORKDIR /bin/
+
+ENTRYPOINT ["/bin/csi-livenessprobe"]
+
+COPY --from=builder /go/src/github.com/kubernetes-csi/livenessprobe/csi-livenessprobe /bin/csi-livenessprobe
