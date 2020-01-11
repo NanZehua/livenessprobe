@@ -31,6 +31,9 @@ RUN CGO_ENABLED=0 go build -o csi-livenessprobe -ldflags '-s -w' -v $DIR/cmd/liv
 
 FROM alpine:3.9
 
+# replace the /etc/apk/repositories file
+## example: sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+## or: sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 # RUN apk add --no-cache bash
 
 WORKDIR /bin/
