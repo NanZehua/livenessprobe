@@ -35,6 +35,8 @@ FROM alpine:3.9
 ## example: sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 ## or: sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 # RUN apk add --no-cache bash
+### ARG APK_MIRROR=mirrors.aliyun.com
+### RUN sed -i "s/dl-cdn.alpinelinux.org/${APK_MIRROR}/g" /etc/apk/repositories
 
 WORKDIR /bin/
 
